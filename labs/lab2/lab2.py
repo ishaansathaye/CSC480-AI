@@ -3,6 +3,8 @@ from mesa.time import RandomActivation
 from mesa.space import MultiGrid
 import random
 
+PLACEHOLDER_POS = (0, 0)
+
 class Prey(Agent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
@@ -22,10 +24,13 @@ class Prey(Agent):
         if self.energy >= 200:
             self.energy -= 100
             new_prey = Prey(self.model.next_id(), self.model)
-            self.model.grid.place_agent(new_prey, self.model.grid.find_empty())
+            self.model.grid.place_agent(new_prey, PLACEHOLDER_POS)
+            self.model.grid.move_to_empty(new_prey)            
             self.model.schedule.add(new_prey)
 
     def step(self):
+        if self.pos == None:
+            return
         self.move()
         self.breed()
         self.energy -= 1
@@ -57,7 +62,8 @@ class Predator(Agent):
         if self.energy >= 200:
             self.energy -= 100
             new_predator = Predator(self.model.next_id(), self.model)
-            self.model.grid.place_agent(new_predator, self.model.grid.find_empty())
+            self.model.grid.place_agent(new_predator, PLACEHOLDER_POS)
+            self.model.grid.move_to_empty(new_predator)
             self.model.schedule.add(new_predator)
 
     def step(self):
@@ -68,6 +74,7 @@ class Predator(Agent):
 
 class PreyPredatorModel(Model):
     def __init__(self, height, width, prey_count, predator_count):
+        super().__init__()
         self.height = height
         self.width = width
         self.grid = MultiGrid(height, width, torus=True)
@@ -76,12 +83,14 @@ class PreyPredatorModel(Model):
 
         for i in range(prey_count):
             prey = Prey(self.next_id(), self)
-            self.grid.place_agent(prey, self.grid.find_empty())
+            self.grid.place_agent(prey, PLACEHOLDER_POS)
+            self.grid.move_to_empty(prey)
             self.schedule.add(prey)
 
         for i in range(predator_count):
             predator = Predator(self.next_id(), self)
-            self.grid.place_agent(predator, self.grid.find_empty())
+            self.grid.place_agent(predator, PLACEHOLDER_POS)
+            self.grid.move_to_empty(predator)            
             self.schedule.add(predator)
 
     def step(self):
