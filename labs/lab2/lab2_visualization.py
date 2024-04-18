@@ -1,9 +1,22 @@
 from mesa import Agent, Model
 from mesa.time import RandomActivation
 from mesa.space import MultiGrid
+from mesa.visualization.modules import CanvasGrid, TextElement
+from mesa.visualization.ModularVisualization import ModularServer
+from mesa.datacollection import DataCollector
 import random
 
 PLACEHOLDER_POS = (0, 0)
+
+class AgentCounter(TextElement):
+    def __init__(self):
+        pass
+
+    def render(self, model):
+        prey_count = sum(isinstance(agent, Prey) for agent in model.schedule.agents)
+        predator_count = sum(isinstance(agent, Predator) for agent in model.schedule.agents)
+        caveman_count = sum(isinstance(agent, Caveman) for agent in model.schedule.agents)
+        return f"Prey: {prey_count}, Predators: {predator_count}, Cavemen: {caveman_count}"
 
 class Caveman(Agent):
     '''Cavemen eat predators and breed when they have enough energy. They lose energy every step.'''
@@ -139,6 +152,13 @@ class PreyPredatorModel(Model):
             self.grid.move_to_empty(caveman)
             self.schedule.add(caveman)
 
+        # Data collector for collecting agent counts
+        self.datacollector = DataCollector(
+            model_reporters={"Prey": lambda m: sum(isinstance(agent, Prey) for agent in m.schedule.agents),
+                             "Predators": lambda m: sum(isinstance(agent, Predator) for agent in m.schedule.agents),
+                             "Cavemen": lambda m: sum(isinstance(agent, Caveman) for agent in m.schedule.agents)}
+        )
+
     def step(self):
         prey_count = sum(isinstance(agent, Prey) for agent in self.schedule.agents)
         predator_count = sum(isinstance(agent, Predator) for agent in self.schedule.agents)
@@ -178,3 +198,24 @@ for i in range(75):
     predator_count = sum(isinstance(agent, Predator) for agent in model.schedule.agents)
     caveman_count = sum(isinstance(agent, Caveman) for agent in model.schedule.agents)
     print(f"Step {i}: Prey={prey_count}, Predators={predator_count}, Cavemen={caveman_count}")
+
+def agent_portrayal(agent):
+    portrayal = {"Shape": "circle", "Filled": "true", "Layer": 0, "r": 0.5}
+    if isinstance(agent, Prey):
+        portrayal["Color"] = "green"
+    elif isinstance(agent, Predator):
+        portrayal["Color"] = "red"
+    elif isinstance(agent, Caveman):
+        portrayal["Color"] = "black"
+    return portrayal
+
+grid = CanvasGrid(agent_portrayal, 10, 10, 500, 500)
+
+server = ModularServer(PreyPredatorModel,
+                       [grid, AgentCounter()],
+                       "Prey-Predator-Caveman Model",
+                       {"height": 10, "width": 10, "prey_count": 50,
+                        "predator_count": 10, "caveman_count": 5})
+
+server.port = 8521
+server.launch()
