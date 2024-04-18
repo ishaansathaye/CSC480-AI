@@ -152,7 +152,7 @@ class PreyPredatorModel(Model):
             self.grid.move_to_empty(caveman)
             self.schedule.add(caveman)
 
-        # Data collector for collecting agent counts
+        # Data collector for counts
         self.datacollector = DataCollector(
             model_reporters={"Prey": lambda m: sum(isinstance(agent, Prey) for agent in m.schedule.agents),
                              "Predators": lambda m: sum(isinstance(agent, Predator) for agent in m.schedule.agents),
