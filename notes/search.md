@@ -51,3 +51,45 @@
 - states describe distinguishable points during problem-solving process
     - dependent on the task and domain
 - actions move the agent from one state to another one
+
+## Searching for Solutions
+- traversal of the search space
+    - from initial to goal
+    - legal sequence of actions as defined by successor function
+- procedure
+    - check for goal state
+    - expand the current state
+        - determine set of reachable states
+        - return failure if set is empty
+    - select one from reachable states -> apply evaluation here
+    - move to the selected state
+- search tree is generated
+    - nodes are added as more states are visited
+
+## Search Terminology
+- search tree
+    - generated as the search spaces is traversed
+        - search space is not necessarily a tree, can be a graph
+        - tree specifies possible paths through the search space
+- expansion of nodes
+    - nodes are expanded by applying the successor function -> generates new set of child nodes
+    - fringe (frontier): nodes that have not been visited yet
+- search strategy
+    - determines selection of the next node to be expanded
+    - can be achieved by ordering the nodes in the fringe
+        - FIFO, LIFO, random, etc.
+
+## Evaluation Criteria
+- Completeness
+    - if there is a solution, it will be found
+- optimality
+    - best solution will be found
+- time complexity
+    - time required to find the solution
+    - does not include time to perform actions
+- space complexity
+    - memory required to find the solution
+    - main factors:
+        - branching factor b
+        - depth d of the shallowest goal node
+        - max path length m
