@@ -93,3 +93,44 @@
         - branching factor b
         - depth d of the shallowest goal node
         - max path length m
+
+## Search Strategies
+- uninformed search (blind search)
+    - number of steps, path cost unknown
+    - agent knows it is at a global only after it reaches a goal
+        - goals not visible from a distance
+- informed search (heuristic search)
+    - agent has background info about the problem
+        - map, costs of action
+        - hints about the location of the goal
+        - evaluating hints can be costly
+
+### Uninformed Search
+- breadth-first vs uniform cost search
+    - breadth-first: always expands the shallowest node
+        - only optimal if all step costs are equal
+    - uniform cost: considers the overall path cost
+        - optimal for any (reasonable) cost function
+            - non-zero, positive
+        - gets bogged down in trees with many fruitless, short branches
+            - low path cost, but no goal node
+    - both are complete for non-extreme problems
+        - finite number of branches
+        - strictly positive cost function
+- depth-first: depth-limited search, iterative deepening
+- bidirectional search
+
+### Informed Search
+- best-first search
+- search with heuristic function
+- memory-bounded search
+- iterative improvement search
+
+### Other Search Strategies
+- Local Search and Optimization
+    - hill climbing, simulated annealing, genetic algorithms, constraint
+    satisfaction
+- search in continuous spaces
+- non-deterministic actions
+- partial observations
+- online search
